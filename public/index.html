@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mars Rover Photos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        label, select, button {
+            margin: 5px;
+        }
+
+        #photos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        img {
+            margin: 5px;
+            width: 200px;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mars Rover Photos</h1>
+    <form id="photoForm">
+        <label for="sol">Martian Sol (Day):</label>
+        <input type="number" id="sol" name="sol" required>
+        <label for="camera">Camera Type:</label>
+        <select id="camera" name="camera">
+            <option value="fhaz">FHAZ</option>
+            <option value="navcam">NAVCAM</option>
+        </select>
+        <button type="submit">Get Photos</button>
+    </form>
+    <div id="photos" class="loading">Enter a Martian Sol and Camera Type to see photos.</div>
+    <script>
+        document.getElementById('photoForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const sol = document.getElementById('sol').value;
+            const camera = document.getElementById('camera').value;
+            const photosDiv = document.getElementById('photos');
+            photosDiv.innerHTML = 'Loading...';
+            try {
+                const response = await fetch(`/photos?sol=${sol}&camera=${camera}`);
+                const data = await response.json();
+                photosDiv.innerHTML = '';
+                data.photos.forEach(photo => {
+                    const img = document.createElement('img');
+                    img.src = photo.img_src;
+                    img.alt = 'Mars Rover Photo';
+                    photosDiv.appendChild(img);
+                });
+            } catch (error) {
+                console.error('Error fetching photos:', error);
+                photosDiv.innerHTML = 'Failed to load photos.';
+            }
+        });
+    </script>
+</body>
+</html>
